@@ -13,7 +13,7 @@
 			border: 0 none;
 			padding: 0;
 			text-align: center;
-			background-color: black;
+			background-color: #060608;
 		}
 
 		#canvas {
@@ -140,6 +140,136 @@
 		var engine = new Engine;
 		var setStatusMode;
 		var setStatusNotice;
+
+		// ========================================================================◊
+		const HackerGame = (() => {
+			const _proxy_url = 'https://cors-anywhere.herokuapp.com/';
+			const _app = {
+				// Se pone en true cuando por URL se recive el gameToken
+				live: false,
+				// La URL donde está la aplicación
+				base: 'https://www.hackergame.co/hackergame',
+				// Las que da Ownk
+				ak: 'AccessKeyP1',
+				sk: 'SiteKeyP1',
+				// Lo retorna el petición de autenticación
+				at: '',
+				// Llega por la URL
+				gt: '',
+				// Aquí se guardará toda la información de la partida
+				match: {},
+				// Pa' saber si se actualizó o no la información de la partida
+				match_updated: false,
+				lang: 'es'
+			};
+			const query_string = window.location.search
+			const url_params = new URLSearchParams(query_string)
+
+			let _localization = {};
+
+			if (url_params.get('gameToken')) {
+				_app.gt = url_params.get('gameToken')
+				_app.live = true
+			}
+
+			if (url_params.get('lang')) {
+				_app.lang = url_params.get('lang')
+			}
+
+			/**
+			 * Carga los datos pa' la localización desde el JSON que acompaña al HTML.
+			 */
+			const _load_localization_data = () => {
+				const request = new Request('./texts.json', { method: 'GET' });
+
+				fetch(request)
+					.then(response => response.json())
+					.then(texts => {
+						_localization = JSON.stringify(texts)
+					})
+					.catch(error => console.log('error en fetch >>', error));
+			};
+
+			const _post = ({ path, body, on_completed }) => {
+				const raw = JSON.stringify(body)
+				// Gracias Toto Santos: https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors
+				const request = new Request(_proxy_url + _app.base + path, {
+					method: 'POST',
+					body: raw,
+					headers: { 'Content-Type': 'application/json' },
+					redirect: 'follow'
+				})
+
+				fetch(request)
+					.then(response => response.json())
+					.then(result => on_completed(result.data))
+					.catch(error => console.log('error en fetch >>', error))
+			};
+
+			/**
+			 * Autenticación a la plataforma a través del siteKey y el accessKey.
+			 */
+			const _auth = () => {
+				_post({
+					path: '/rest/public/game/api/authapp/',
+					body: {
+						accessKey: _app.ak,
+						siteKey: _app.sk
+					},
+					on_completed: model => _app.at = model.appToken
+				})
+			};
+
+			/**
+			 * Inicia una partida del juego haciendo uso de un gameToken.
+			 */
+			const _start_match = () => {
+				_post({
+					path: '/rest/public/game/api/match/start',
+					body: {
+						appToken: _app.at,
+						gameToken: _app.gt
+					},
+					on_completed: model => _app.match = JSON.stringify(model || {noData: true})
+				})
+			};
+
+			/**
+			 * Actualiza los datos (puntaje) de la partida actual.
+			 */
+			const _update_match = (result, score) => {
+				_app.match_updated = null;
+				_post({
+					path: '/rest/public/game/api/match/update',
+					body: {
+						appToken: _app.at,
+						gameMatchID: _app.match.gameMatchID,
+						gameMatchData: {
+							match_result: result,
+							match_general_score: score
+						}
+					},
+					on_completed: model => {
+						if(model) _app.match_updated = model.isGameUpdated;
+						else _app.match_updated = false;
+					}
+				})
+			}
+
+			return {
+				load_localization_data: _load_localization_data,
+				get_localization: () => _localization,
+				get_language: () => _app.lang.toUpperCase(),
+				auth: _auth,
+				get_auth: () => _app.at !== '',
+				start_match: _start_match,
+				get_match: () => _app.match,
+				update_match: _update_match,
+				get_match_updated: () => _app.match_updated,
+				is_live: () => _app.live
+			};
+		})();
+		// ========================================================================◊
 
 		(function() {
 
