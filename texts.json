@@ -427,6 +427,10 @@
       "GUI_CANCEL": "Cancelar",
       "GUI_LANGUAGES": "Idioma",
       "GUI_HTML_CLICK": "Haz clic aquí",
+      "GUI_HTML_LOCALIZATION": "< Obteniendo traducciones >",
+      "GUI_HTML_AUTH": "< Autenticando jugador >",
+      "GUI_HTML_MATCH": "< Iniciando partida >",
+      "GUI_HTML_NO_MATCH": "< Sin conexión a la plataforma >",
 
       "NO_MORE_DATA": "No hay más información en la base de datos. Intenta con otra aplicación.",
       "BINDOS_OS_NAME": "BindOS 2000",
@@ -852,6 +856,8 @@
       "GUI_CANCEL": "Cancel",
       "GUI_LANGUAGES": "Language",
       "GUI_HTML_CLICK": "Click me!",
+      "GUI_AUTHENTICATING": "AUTENTICÁNDOSE EN LA PLATAFORMA...",
+      "GUI_STARTING_MATCH": "CREANDO PARTIDA EN LA PLATAFORMA...",
 
       "NO_MORE_DATA": "No hay más información en la base de datos. Intenta con otra aplicación.",
       "BINDOS_OS_NAME": "BindOS 2000",
