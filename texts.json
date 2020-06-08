@@ -527,7 +527,11 @@
 
       "GAME_NAME": "Home\nOffice Attack",
       "GAME_NAME_SUBTITLE": "The attack of Trojan Hawk",
-      "CREDITS": "A game made by"
+      "CREDITS": "A game made by",
+
+      "MATCH_UPDATED": "¡Se actualizó la partida!",
+      "MATCH_FINISHED": "¡Se terminó la partida!",
+      "NO_MATCH": "No se actualizó la parida. No hay conexión a la plataforma."
     },
 
     "pt": {
