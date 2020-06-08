@@ -403,7 +403,10 @@
 			}
 
 			if (url_params.get('lang')) {
-				_app.lang = url_params.get('lang');
+				_app.lang = url_params.get('lang').toLowerCase();
+				if (_app.lang === 'br' || _app.lang === 'pt-br') {
+					_app.lang = 'pt'
+				}
 			}
 
 			_load_localization_data()
