@@ -1,431 +1,491 @@
 <!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml' lang='' xml:lang=''>
-<head>
-	<meta charset='utf-8' />
-	<meta name='viewport' content='width=device-width, user-scalable=no' />
-	<link id='-gd-engine-icon' rel='icon' type='image/png' href='favicon.png' />
-	<title></title>
-	<style type='text/css'>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link id="-gd-engine-icon" rel="icon" type="image/png" href="favicon.png" />
+    <title></title>
+    <style type="text/css">
+      body {
+        touch-action: none;
+        margin: 0;
+        border: 0 none;
+        padding: 0;
+        text-align: center;
+        background-color: #060608;
+      }
 
-		body {
-			touch-action: none;
-			margin: 0;
-			border: 0 none;
-			padding: 0;
-			text-align: center;
-			background-color: #060608;
-		}
+      #canvas {
+        display: block;
+        margin: 0;
+        color: white;
+      }
 
-		#canvas {
-			display: block;
-			margin: 0;
-			color: white;
-		}
+      #canvas:focus {
+        outline: none;
+      }
 
-		#canvas:focus {
-			outline: none;
-		}
+      .godot {
+        font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+        color: #e0e0e0;
+        background-color: #3b3943;
+        background-image: linear-gradient(to bottom, #403e48, #35333c);
+        border: 1px solid #45434e;
+        box-shadow: 0 0 1px 1px #2f2d35;
+      }
 
-		.godot {
-			font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
-			color: #e0e0e0;
-			background-color: #3b3943;
-			background-image: linear-gradient(to bottom, #403e48, #35333c);
-			border: 1px solid #45434e;
-			box-shadow: 0 0 1px 1px #2f2d35;
-		}
-
-
-		/* Status display
+      /* Status display
 		 * ============== */
 
-		#status {
-			position: absolute;
-			left: 0;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			/* don't consume click events - make children visible explicitly */
-			visibility: hidden;
-		}
+      #status {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* don't consume click events - make children visible explicitly */
+        visibility: hidden;
+      }
 
-		#status-progress {
-			width: 366px;
-			height: 7px;
-			background-color: #38363A;
-			border: 1px solid #444246;
-			padding: 1px;
-			box-shadow: 0 0 2px 1px #1B1C22;
-			border-radius: 2px;
-			visibility: visible;
-		}
+      #status-progress {
+        width: 366px;
+        height: 7px;
+        background-color: #38363a;
+        border: 1px solid #444246;
+        padding: 1px;
+        box-shadow: 0 0 2px 1px #1b1c22;
+        border-radius: 2px;
+        visibility: visible;
+      }
 
-		@media only screen and (orientation:portrait) {
-			#status-progress {
-				width: 61.8%;
-			}
-		}
+      @media only screen and (orientation: portrait) {
+        #status-progress {
+          width: 61.8%;
+        }
+      }
 
-		#status-progress-inner {
-			height: 100%;
-			width: 0;
-			box-sizing: border-box;
-			transition: width 0.5s linear;
-			background-color: #202020;
-			border: 1px solid #222223;
-			box-shadow: 0 0 1px 1px #27282E;
-			border-radius: 3px;
-		}
+      #status-progress-inner {
+        height: 100%;
+        width: 0;
+        box-sizing: border-box;
+        transition: width 0.5s linear;
+        background-color: #202020;
+        border: 1px solid #222223;
+        box-shadow: 0 0 1px 1px #27282e;
+        border-radius: 3px;
+      }
 
-		#status-indeterminate {
-			visibility: visible;
-			position: relative;
-		}
+      #status-indeterminate {
+        visibility: visible;
+        position: relative;
+      }
 
-		#status-indeterminate > div {
-			width: 4.5px;
-			height: 0;
-			border-style: solid;
-			border-width: 9px 3px 0 3px;
-			border-color: #2b2b2b transparent transparent transparent;
-			transform-origin: center 21px;
-			position: absolute;
-		}
+      #status-indeterminate > div {
+        width: 4.5px;
+        height: 0;
+        border-style: solid;
+        border-width: 9px 3px 0 3px;
+        border-color: #2b2b2b transparent transparent transparent;
+        transform-origin: center 21px;
+        position: absolute;
+      }
 
-		#status-indeterminate > div:nth-child(1) { transform: rotate( 22.5deg); }
-		#status-indeterminate > div:nth-child(2) { transform: rotate( 67.5deg); }
-		#status-indeterminate > div:nth-child(3) { transform: rotate(112.5deg); }
-		#status-indeterminate > div:nth-child(4) { transform: rotate(157.5deg); }
-		#status-indeterminate > div:nth-child(5) { transform: rotate(202.5deg); }
-		#status-indeterminate > div:nth-child(6) { transform: rotate(247.5deg); }
-		#status-indeterminate > div:nth-child(7) { transform: rotate(292.5deg); }
-		#status-indeterminate > div:nth-child(8) { transform: rotate(337.5deg); }
+      #status-indeterminate > div:nth-child(1) {
+        transform: rotate(22.5deg);
+      }
+      #status-indeterminate > div:nth-child(2) {
+        transform: rotate(67.5deg);
+      }
+      #status-indeterminate > div:nth-child(3) {
+        transform: rotate(112.5deg);
+      }
+      #status-indeterminate > div:nth-child(4) {
+        transform: rotate(157.5deg);
+      }
+      #status-indeterminate > div:nth-child(5) {
+        transform: rotate(202.5deg);
+      }
+      #status-indeterminate > div:nth-child(6) {
+        transform: rotate(247.5deg);
+      }
+      #status-indeterminate > div:nth-child(7) {
+        transform: rotate(292.5deg);
+      }
+      #status-indeterminate > div:nth-child(8) {
+        transform: rotate(337.5deg);
+      }
 
-		#status-notice {
-			margin: 0 100px;
-			line-height: 1.3;
-			visibility: visible;
-			padding: 4px 6px;
-			visibility: visible;
-		}
-	</style>
+      #status-notice {
+        margin: 0 100px;
+        line-height: 1.3;
+        visibility: visible;
+        padding: 4px 6px;
+        visibility: visible;
+      }
+    </style>
+    
+  </head>
+  <body>
+    <canvas id="canvas">
+      HTML5 canvas appears to be unsupported in the current browser.<br />
+      Please try updating or use a different browser.
+    </canvas>
+    <div id="status">
+      <div
+        id="status-progress"
+        style="display: none;"
+        oncontextmenu="event.preventDefault();"
+      >
+        <div id="status-progress-inner"></div>
+      </div>
+      <div
+        id="status-indeterminate"
+        style="display: none;"
+        oncontextmenu="event.preventDefault();"
+      >
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div id="status-notice" class="godot" style="display: none;"></div>
+    </div>
 
-</head>
-<body>
-	<canvas id='canvas'>
-		HTML5 canvas appears to be unsupported in the current browser.<br />
-		Please try updating or use a different browser.
-	</canvas>
-	<div id='status'>
-		<div id='status-progress' style='display: none;' oncontextmenu='event.preventDefault();'><div id ='status-progress-inner'></div></div>
-		<div id='status-indeterminate' style='display: none;' oncontextmenu='event.preventDefault();'>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-		</div>
-		<div id='status-notice' class='godot' style='display: none;'></div>
-	</div>
+    <script src="https://kjur.github.io/jsrsasign/jsrsasign-all-min.js"></script>
+    <script type="text/javascript" src="Sopataque.js"></script>
+    <script type="text/javascript">
+      //<![CDATA[
 
-	<script src="https://kjur.github.io/jsrsasign/jsrsasign-all-min.js"></script>
-	<script type='text/javascript' src='Sopataque.js'></script>
-	<script type='text/javascript'>//<![CDATA[
+      var engine = new Engine()
+      var setStatusMode
+      var setStatusNotice
 
-		var engine = new Engine;
-		var setStatusMode;
-		var setStatusNotice;
+      const load_game = function () {
+        const EXECUTABLE_NAME = 'Sopataque'
+        const MAIN_PACK = 'Sopataque.pck'
+        const INDETERMINATE_STATUS_STEP_MS = 100
 
-		const load_game = (function() {
+        var canvas = document.getElementById('canvas')
+        var statusProgress = document.getElementById('status-progress')
+        var statusProgressInner = document.getElementById(
+          'status-progress-inner'
+        )
+        var statusIndeterminate = document.getElementById(
+          'status-indeterminate'
+        )
+        var statusNotice = document.getElementById('status-notice')
 
-			const EXECUTABLE_NAME = 'Sopataque';
-			const MAIN_PACK = 'Sopataque.pck';
-			const INDETERMINATE_STATUS_STEP_MS = 100;
+        var initializing = true
+        var statusMode = 'hidden'
 
-			var canvas = document.getElementById('canvas');
-			var statusProgress = document.getElementById('status-progress');
-			var statusProgressInner = document.getElementById('status-progress-inner');
-			var statusIndeterminate = document.getElementById('status-indeterminate');
-			var statusNotice = document.getElementById('status-notice');
+        var animationCallbacks = []
+        function animate(time) {
+          animationCallbacks.forEach((callback) => callback(time))
+          requestAnimationFrame(animate)
+        }
+        requestAnimationFrame(animate)
 
-			var initializing = true;
-			var statusMode = 'hidden';
+        function adjustCanvasDimensions() {
+          var scale = window.devicePixelRatio || 1
+          var width = window.innerWidth
+          var height = window.innerHeight
+          canvas.width = width * scale
+          canvas.height = height * scale
+          canvas.style.width = width + 'px'
+          canvas.style.height = height + 'px'
+        }
+        animationCallbacks.push(adjustCanvasDimensions)
+        adjustCanvasDimensions()
 
-			var animationCallbacks = [];
-			function animate(time) {
-				animationCallbacks.forEach(callback => callback(time));
-				requestAnimationFrame(animate);
-			}
-			requestAnimationFrame(animate);
+        setStatusMode = function setStatusMode(mode) {
+          if (statusMode === mode || !initializing) return
+          ;[statusProgress, statusIndeterminate, statusNotice].forEach(
+            (elem) => {
+              elem.style.display = 'none'
+            }
+          )
+          animationCallbacks = animationCallbacks.filter(function (value) {
+            return value != animateStatusIndeterminate
+          })
+          switch (mode) {
+            case 'progress':
+              statusProgress.style.display = 'block'
+              break
+            case 'indeterminate':
+              statusIndeterminate.style.display = 'block'
+              animationCallbacks.push(animateStatusIndeterminate)
+              break
+            case 'notice':
+              statusNotice.style.display = 'block'
+              break
+            case 'hidden':
+              break
+            default:
+              throw new Error('Invalid status mode')
+          }
+          statusMode = mode
+        }
 
-			function adjustCanvasDimensions() {
-				var scale = window.devicePixelRatio || 1;
-				var width = window.innerWidth;
-				var height = window.innerHeight;
-				canvas.width = width * scale;
-				canvas.height = height * scale;
-				canvas.style.width = width + "px";
-				canvas.style.height = height + "px";
-			}
-			animationCallbacks.push(adjustCanvasDimensions);
-			adjustCanvasDimensions();
+        function animateStatusIndeterminate(ms) {
+          var i = Math.floor((ms / INDETERMINATE_STATUS_STEP_MS) % 8)
+          if (statusIndeterminate.children[i].style.borderTopColor == '') {
+            Array.prototype.slice
+              .call(statusIndeterminate.children)
+              .forEach((child) => {
+                child.style.borderTopColor = ''
+              })
+            statusIndeterminate.children[i].style.borderTopColor = '#dfdfdf'
+          }
+        }
 
-			setStatusMode = function setStatusMode(mode) {
+        setStatusNotice = function setStatusNotice(text) {
+          while (statusNotice.lastChild) {
+            statusNotice.removeChild(statusNotice.lastChild)
+          }
+          var lines = text.split('\n')
+          lines.forEach((line) => {
+            statusNotice.appendChild(document.createTextNode(line))
+            statusNotice.appendChild(document.createElement('br'))
+          })
+        }
 
-				if (statusMode === mode || !initializing)
-					return;
-				[statusProgress, statusIndeterminate, statusNotice].forEach(elem => {
-					elem.style.display = 'none';
-				});
-				animationCallbacks = animationCallbacks.filter(function(value) {
-					return (value != animateStatusIndeterminate);
-				});
-				switch (mode) {
-					case 'progress':
-						statusProgress.style.display = 'block';
-						break;
-					case 'indeterminate':
-						statusIndeterminate.style.display = 'block';
-						animationCallbacks.push(animateStatusIndeterminate);
-						break;
-					case 'notice':
-						statusNotice.style.display = 'block';
-						break;
-					case 'hidden':
-						break;
-					default:
-						throw new Error('Invalid status mode');
-				}
-				statusMode = mode;
-			}
+        engine.setProgressFunc((current, total) => {
+          if (total > 0) {
+            statusProgressInner.style.width = (current / total) * 100 + '%'
+            setStatusMode('progress')
+            if (current === total) {
+              // wait for progress bar animation
+              setTimeout(() => {
+                setStatusMode('indeterminate')
+              }, 500)
+            }
+          } else {
+            setStatusMode('indeterminate')
+          }
+        })
 
-			function animateStatusIndeterminate(ms) {
+        function displayFailureNotice(err) {
+          var msg = err.message || err
+          console.error(msg)
+          setStatusNotice(msg)
+          setStatusMode('notice')
+          initializing = false
+        }
 
-				var i = Math.floor(ms / INDETERMINATE_STATUS_STEP_MS % 8);
-				if (statusIndeterminate.children[i].style.borderTopColor == '') {
-					Array.prototype.slice.call(statusIndeterminate.children).forEach(child => {
-						child.style.borderTopColor = '';
-					});
-					statusIndeterminate.children[i].style.borderTopColor = '#dfdfdf';
-				}
-			}
+        if (!Engine.isWebGLAvailable()) {
+          displayFailureNotice('WebGL not available')
+        } else {
+          setStatusMode('indeterminate')
+          engine.setCanvas(canvas)
+          engine.startGame(EXECUTABLE_NAME, MAIN_PACK).then(() => {
+            setStatusMode('hidden')
+            initializing = false
+          }, displayFailureNotice)
+        }
+      }
+      //]]>
+    </script>
+    <script type="text/javascript">
+      // ========================================================================{
+      const HackerGame = (() => {
+        const _app = {
+          // Se pone en true cuando por URL se recive el gameToken
+          live: false,
+          gt: '',
+          has_token: false,
+          // Pa' saber si se actualizó o no la información de la partida
+          match_updated: false,
+          lang: 'es',
+          visibility: true,
+        }
+        const query_string = window.location.search
+        const url_params = new URLSearchParams(query_string)
 
-			setStatusNotice = function setStatusNotice(text) {
+        let _localization = null
 
-				while (statusNotice.lastChild) {
-					statusNotice.removeChild(statusNotice.lastChild);
-				}
-				var lines = text.split('\n');
-				lines.forEach((line) => {
-					statusNotice.appendChild(document.createTextNode(line));
-					statusNotice.appendChild(document.createElement('br'));
-				});
-			};
+        // Escucha cuando se pierde la visibilidad en la pestaña en la que se
+        // ejecuta el juego para pausar y reanudar el audio
+        const _setup_visibility_change = () => {
+          let hidden, visibilityChange
+          if (typeof document.hidden !== 'undefined') {
+            // Opera 12.10 and Firefox 18 and later support
+            hidden = 'hidden'
+            visibilityChange = 'visibilitychange'
+          } else if (typeof document.msHidden !== 'undefined') {
+            hidden = 'msHidden'
+            visibilityChange = 'msvisibilitychange'
+          } else if (typeof document.webkitHidden !== 'undefined') {
+            hidden = 'webkitHidden'
+            visibilityChange = 'webkitvisibilitychange'
+          }
 
-			engine.setProgressFunc((current, total) => {
+          const handleVisibilityChange = () => {
+            if (document[hidden]) {
+              _audioDriver_audioContext && _audioDriver_audioContext.suspend()
+            } else {
+              _audioDriver_audioContext && _audioDriver_audioContext.resume()
+            }
+          }
 
-				if (total > 0) {
-					statusProgressInner.style.width = current/total * 100 + '%';
-					setStatusMode('progress');
-					if (current === total) {
-						// wait for progress bar animation
-						setTimeout(() => {
-							setStatusMode('indeterminate');
-						}, 500);
-					}
-				} else {
-					setStatusMode('indeterminate');
-				}
-			});
+          document.addEventListener(
+            visibilityChange,
+            handleVisibilityChange,
+            false
+          )
+        }
 
-			function displayFailureNotice(err) {
-				var msg = err.message || err;
-				console.error(msg);
-				setStatusNotice(msg);
-				setStatusMode('notice');
-				initializing = false;
-			};
+        /**
+         * Carga los datos pa' la localización desde el JSON que acompaña al HTML.
+         */
+        const _load_localization_data = () => {
+          if (_localization !== null) return
 
-			if (!Engine.isWebGLAvailable()) {
-				displayFailureNotice('WebGL not available');
-			} else {
-				setStatusMode('indeterminate');
-				engine.setCanvas(canvas);
-				engine.startGame(EXECUTABLE_NAME, MAIN_PACK).then(() => {
-					setStatusMode('hidden');
-					initializing = false;
-				}, displayFailureNotice);
-			}
-		});
-	//]]></script>
-	<script type="text/javascript">
-		// ========================================================================{
-		const HackerGame = (() => {
-			const _app = {
-				// Se pone en true cuando por URL se recive el gameToken
-				live: false,
-				gt: '',
-				has_token: false,
-				// Pa' saber si se actualizó o no la información de la partida
-				match_updated: false,
-				lang: 'es'
-			};
-			const query_string = window.location.search
-			const url_params = new URLSearchParams(query_string)
+          const request = new Request('./texts.json', { method: 'GET' })
 
-			let _localization = null;
+          fetch(request)
+            .then((response) => response.json())
+            .then((texts) => {
+              _localization = JSON.stringify(texts)
 
-			/**
-			 * Carga los datos pa' la localización desde el JSON que acompaña al HTML.
-			 */
-			const _load_localization_data = () => {
-				if (_localization !== null) return
+              if (_app.live) {
+                _load_app_cfg()
+              } else {
+                load_game()
+              }
+            })
+            .catch((error) => console.log('error en fetch >>', error))
+        }
 
-				const request = new Request('./texts.json', { method: 'GET' });
+        const _load_app_cfg = () => {
+          const request = new Request('./app.json', { method: 'GET' })
 
-				fetch(request)
-					.then(response => response.json())
-					.then(texts => {
-						_localization = JSON.stringify(texts);
+          fetch(request)
+            .then((response) => response.json())
+            .then((cfg) => {
+              _app.cfg = cfg
+              _app.cfg.keys = {}
+              _app.cfg.keys = KJUR.jws.JWS.parse(
+                _app.cfg.signature,
+                { utf8: 'F179EA7D5A66382D8F4434F1B2B19' },
+                { alg: ['HS256'] }
+              ).payloadObj
+              load_game()
+            })
+            .catch((error) => console.log('error en fetch >>', error))
+        }
 
-						if (_app.live) {
-							_load_app_cfg();
-						} else {
-							load_game();
-						}
+        const _post = ({ path, body, on_completed }) => {
+          const raw = JSON.stringify(body)
+          const proxy = _app.cfg.use_proxy ? _app.cfg.proxy : ''
+          // Gracias Toto Santos: https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors
+          const request = new Request(
+            proxy + _app.cfg.domains[_app.cfg.env] + _app.cfg.api + path,
+            {
+              method: 'POST',
+              body: raw,
+              headers: { 'Content-Type': 'application/json' },
+              redirect: 'follow',
+            }
+          )
 
-					})
-					.catch(error => console.log('error en fetch >>', error));
-			};
+          fetch(request)
+            .then((response) => response.json())
+            .then((result) => on_completed(result.data))
+            .catch((error) => console.log('error en fetch >>', error))
+        }
 
-			const _load_app_cfg = () => {
-				const request = new Request('./app.json', { method: 'GET' });
+        /**
+         * Autenticación a la plataforma a través del siteKey y el accessKey.
+         */
+        const _auth = () => {
+          _post({
+            path: '/authapp/',
+            body: {
+              accessKey: _app.cfg.keys.ak,
+              siteKey: _app.cfg.keys.sk,
+            },
+            on_completed: (model) => {
+              _app.has_token = model.appToken !== ''
+              _app.cfg.at = model.appToken
+            },
+          })
+        }
 
-				fetch(request)
-					.then(response => response.json())
-					.then(cfg => {
-						_app.cfg = cfg;
-						_app.cfg.keys = {};
-						_app.cfg.keys = KJUR.jws.JWS.parse(
-							_app.cfg.signature,
-      				{ utf8: 'F179EA7D5A66382D8F4434F1B2B19' },
-      				{ alg: ['HS256'] }
-							).payloadObj;
-						load_game();
-					})
-					.catch(error => console.log('error en fetch >>', error));
-			};
+        /**
+         * Inicia una partida del juego haciendo uso de un gameToken.
+         */
+        const _start_match = () => {
+          _post({
+            path: '/match/start/',
+            body: {
+              appToken: _app.cfg.at,
+              gameToken: _app.gt,
+            },
+            on_completed: (model) => {
+              _app.cfg.match = model || { noData: true }
+            },
+          })
+        }
 
-			const _post = ({ path, body, on_completed }) => {
-				const raw = JSON.stringify(body);
-				const proxy = _app.cfg.use_proxy ? _app.cfg.proxy : '';
-				// Gracias Toto Santos: https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors
-				const request = new Request(
-					proxy + _app.cfg.domains[_app.cfg.env] + _app.cfg.api + path,
-					{
-						method: 'POST',
-						body: raw,
-						headers: { 'Content-Type': 'application/json' },
-						redirect: 'follow'
-					}
-				);
+        /**
+         * Actualiza los datos (puntaje) de la partida actual.
+         */
+        const _update_match = (result, score) => {
+          _app.match_updated = null
+          _post({
+            path: '/match/update/',
+            body: {
+              appToken: _app.cfg.at,
+              gameMatchID: _app.cfg.match.gameMatchID,
+              gameMatchData: {
+                match_result: result,
+                match_general_score: score,
+              },
+            },
+            on_completed: (model) => {
+              if (model) _app.match_updated = model.isGameUpdated
+              else _app.match_updated = false
+            },
+          })
+        }
 
-				fetch(request)
-					.then(response => response.json())
-					.then(result => on_completed(result.data))
-					.catch(error => console.log('error en fetch >>', error));
-			};
+        if (url_params.get('gameToken')) {
+          _app.gt = url_params.get('gameToken')
+          _app.live = true
+        }
 
-			/**
-			 * Autenticación a la plataforma a través del siteKey y el accessKey.
-			 */
-			const _auth = () => {
-				_post({
-					path: '/authapp/',
-					body: {
-						accessKey: _app.cfg.keys.ak,
-						siteKey: _app.cfg.keys.sk
-					},
-					on_completed: model => {
-						_app.has_token = model.appToken !== ''
-						_app.cfg.at = model.appToken
-					}
-				})
-			};
+        if (url_params.get('lang')) {
+          _app.lang = url_params.get('lang').toLowerCase()
+          if (_app.lang === 'br' || _app.lang === 'pt-br') {
+            _app.lang = 'pt'
+          }
+        }
 
-			/**
-			 * Inicia una partida del juego haciendo uso de un gameToken.
-			 */
-			const _start_match = () => {
-				_post({
-					path: '/match/start/',
-					body: {
-						appToken: _app.cfg.at,
-						gameToken: _app.gt
-					},
-					on_completed: model => {
-						_app.cfg.match = model || { noData: true }
-					}
-				})
-			};
+        _load_localization_data()
+        _setup_visibility_change()
 
-			/**
-			 * Actualiza los datos (puntaje) de la partida actual.
-			 */
-			const _update_match = (result, score) => {
-				_app.match_updated = null;
-				_post({
-					path: '/match/update/',
-					body: {
-						appToken: _app.cfg.at,
-						gameMatchID: _app.cfg.match.gameMatchID,
-						gameMatchData: {
-							match_result: result,
-							match_general_score: score
-						}
-					},
-					on_completed: model => {
-						if(model) _app.match_updated = model.isGameUpdated;
-						else _app.match_updated = false;
-					}
-				})
-			}
-
-			if (url_params.get('gameToken')) {
-				_app.gt = url_params.get('gameToken');
-				_app.live = true;
-			}
-
-			if (url_params.get('lang')) {
-				_app.lang = url_params.get('lang').toLowerCase();
-				if (_app.lang === 'br' || _app.lang === 'pt-br') {
-					_app.lang = 'pt'
-				}
-			}
-
-			_load_localization_data()
-
-			return {
-				load_localization_data: _load_localization_data,
-				get_localization: () => _localization,
-				get_language: () => _app.lang.toUpperCase(),
-				auth: _auth,
-				get_auth: () => _app.has_token,
-				start_match: _start_match,
-				get_match: () => JSON.stringify(_app.cfg.match),
-				update_match: _update_match,
-				get_match_updated: () => _app.match_updated,
-				is_live: () => _app.live
-			};
-		})();
-		// }========================================================================
-	</script>
-</body>
+        return {
+          load_localization_data: _load_localization_data,
+          get_localization: () => _localization,
+          get_language: () => _app.lang.toUpperCase(),
+          auth: _auth,
+          get_auth: () => _app.has_token,
+          start_match: _start_match,
+          get_match: () => JSON.stringify(_app.cfg.match),
+          update_match: _update_match,
+          get_match_updated: () => _app.match_updated,
+          is_live: () => _app.live,
+        }
+      })()
+      // }========================================================================
+    </script>
+  </body>
 </html>
 
